@@ -22,7 +22,24 @@ export function MessageEditor({
 }: MessageEditorProps) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const [draftContent, setDraftContent] = useState<string>(message.content);
+  // Extract text content from message parts or fallback to message.content
+  const extractMessageContent = () => {
+    // If message has parts with text, use that
+    if (message.parts && message.parts.length > 0) {
+      const textParts = message.parts
+        .filter(part => part.type === 'text')
+        .map(part => part.text);
+      
+      if (textParts.length > 0) {
+        return textParts.join('\n');
+      }
+    }
+    
+    // Fallback to content if it exists
+    return message.content || '';
+  };
+
+  const [draftContent, setDraftContent] = useState<string>(extractMessageContent());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
