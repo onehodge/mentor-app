@@ -15,18 +15,17 @@ import {
 export const myProvider = isTestEnvironment
   ? customProvider({
       languageModels: {
-        'chat-model': chatModel,
-        'chat-model-reasoning': reasoningModel,
+        'max-stoic': chatModel,
+        'neo-founder': chatModel,
+        'jen-sage': chatModel,
         'title-model': titleModel,
       },
     })
   : customProvider({
       languageModels: {
-        'chat-model': google('gemini-2.0-flash'),
-        'chat-model-reasoning': wrapLanguageModel({
-          model: google('gemini-2.5-flash'),
-          middleware: extractReasoningMiddleware({ tagName: 'think' }),
-        }),
+        'max-stoic': google('gemini-2.0-flash'),
+        'neo-founder': google('gemini-2.0-flash'),
+        'jen-sage': google('gemini-2.0-flash'),
         'title-model': google('gemini-2.0-flash'),
       },
       imageModels: {
