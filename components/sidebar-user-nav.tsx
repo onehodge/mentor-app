@@ -5,6 +5,7 @@ import Image from 'next/image';
 import type { User } from 'next-auth';
 import { signOut, useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
+import { useCallback, useRef } from 'react';
 
 import {
   DropdownMenu,
@@ -27,8 +28,18 @@ export function SidebarUserNav({ user }: { user: User }) {
   const router = useRouter();
   const { data, status } = useSession();
   const { setTheme, theme } = useTheme();
+  const themeChangeTimeout = useRef<NodeJS.Timeout>();
 
   const isGuest = guestRegex.test(data?.user?.email ?? '');
+
+  const handleThemeChange = useCallback(() => {
+    if (themeChangeTimeout.current) {
+      clearTimeout(themeChangeTimeout.current);
+    }
+    themeChangeTimeout.current = setTimeout(() => {
+      setTheme(theme === 'dark' ? 'light' : 'dark');
+    }, 100);
+  }, [theme, setTheme]);
 
   return (
     <SidebarMenu>
@@ -74,7 +85,7 @@ export function SidebarUserNav({ user }: { user: User }) {
             <DropdownMenuItem
               data-testid="user-nav-item-theme"
               className="cursor-pointer"
-              onSelect={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onSelect={handleThemeChange}
             >
               {`Toggle ${theme === 'light' ? 'dark' : 'light'} mode`}
             </DropdownMenuItem>

@@ -74,8 +74,9 @@ export default async function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
-          enableSystem
+          enableSystem={false}
           disableTransitionOnChange
+          storageKey="theme"
         >
           <Toaster position="top-center" />
           <SessionProvider>{children}</SessionProvider>
