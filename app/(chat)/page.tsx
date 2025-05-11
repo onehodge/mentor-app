@@ -5,11 +5,13 @@ import { generateUUID } from '@/lib/utils';
 import { auth } from '../(auth)/auth';
 import { redirect } from 'next/navigation';
 
-export default async function Page(props: {
-  searchParams?: {
+interface PageProps {
+  searchParams?: Promise<{
     modelId?: string;
-  };
-}) {
+  }>;
+}
+
+export default async function Page(props: PageProps) {
   const session = await auth();
 
   if (!session) {
@@ -21,12 +23,15 @@ export default async function Page(props: {
   const cookieStore = await cookies();
   const modelIdFromCookie = cookieStore.get('chat-model');
 
+  // Await searchParams
+  const searchParams = await props.searchParams;
+
   // Determine the initial chat model for a new chat
   // Priority:
   // 1. modelId from query parameter (e.g., when redirected from an existing chat)
   // 2. Model ID from the user's cookie
   // 3. Default chat model
-  const modelIdFromQuery = props.searchParams?.modelId;
+  const modelIdFromQuery = searchParams?.modelId;
   const initialChatModelToUse =
     modelIdFromQuery || modelIdFromCookie?.value || DEFAULT_CHAT_MODEL;
 
