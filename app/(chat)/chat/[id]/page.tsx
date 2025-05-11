@@ -53,28 +53,22 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const chatModelFromCookie = cookieStore.get('chat-model');
 
-  if (!chatModelFromCookie) {
-    return (
-      <>
-        <Chat
-          id={chat.id}
-          initialMessages={convertToUIMessages(messagesFromDb)}
-          initialChatModel={DEFAULT_CHAT_MODEL}
-          initialVisibilityType={chat.visibility}
-          isReadonly={session?.user?.id !== chat.userId}
-          session={session}
-          autoResume={true}
-        />
-      </>
-    );
-  }
+  // Determine the initial chat model
+  // Priority: 
+  // 1. Model ID stored with the chat itself (chat.selectedChatModelId)
+  // 2. Model ID from the user's cookie (chatModelFromCookie)
+  // 3. Default chat model (DEFAULT_CHAT_MODEL)
+  const initialChatModelToUse =
+    chat.selectedChatModelId ||
+    chatModelFromCookie?.value ||
+    DEFAULT_CHAT_MODEL;
 
   return (
     <>
       <Chat
         id={chat.id}
         initialMessages={convertToUIMessages(messagesFromDb)}
-        initialChatModel={chatModelFromCookie.value}
+        initialChatModel={initialChatModelToUse}
         initialVisibilityType={chat.visibility}
         isReadonly={session?.user?.id !== chat.userId}
         session={session}

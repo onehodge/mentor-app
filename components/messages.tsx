@@ -16,6 +16,7 @@ interface MessagesProps {
   setMessages: UseChatHelpers['setMessages'];
   reload: UseChatHelpers['reload'];
   isReadonly: boolean;
+  initialChatModel: string;
 }
 
 function PureMessages({
@@ -26,6 +27,7 @@ function PureMessages({
   setMessages,
   reload,
   isReadonly,
+  initialChatModel,
 }: MessagesProps) {
   const {
     containerRef: messagesContainerRef,
@@ -62,6 +64,7 @@ function PureMessages({
           requiresScrollPadding={
             hasSentMessage && index === messages.length - 1
           }
+          initialChatModel={initialChatModel}
         />
       ))}
 
@@ -81,6 +84,7 @@ function PureMessages({
 
 export const Messages = memo(PureMessages, (prevProps, nextProps) => {
   if (prevProps.status !== nextProps.status) return false;
+  if (prevProps.initialChatModel !== nextProps.initialChatModel) return false;
   if (prevProps.status && nextProps.status) return false;
   if (prevProps.messages.length !== nextProps.messages.length) return false;
   if (!equal(prevProps.messages, nextProps.messages)) return false;

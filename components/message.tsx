@@ -17,6 +17,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { MessageEditor } from './message-editor';
 import { MessageReasoning } from './message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import { chatModels } from '@/lib/ai/models';
 
 const PurePreviewMessage = ({
   chatId,
@@ -27,6 +28,7 @@ const PurePreviewMessage = ({
   reload,
   isReadonly,
   requiresScrollPadding,
+  initialChatModel,
 }: {
   chatId: string;
   message: UIMessage;
@@ -36,8 +38,14 @@ const PurePreviewMessage = ({
   reload: UseChatHelpers['reload'];
   isReadonly: boolean;
   requiresScrollPadding: boolean;
+  initialChatModel: string;
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
+
+  const persona = message.role === 'assistant'
+    ? chatModels.find(model => model.id === initialChatModel)
+    : undefined;
+  const personaName = persona?.name.split(' – ')[0];
 
   return (
     <AnimatePresence>
@@ -70,6 +78,12 @@ const PurePreviewMessage = ({
               'min-h-96': message.role === 'assistant' && requiresScrollPadding,
             })}
           >
+            {message.role === 'assistant' && personaName && (
+              <div className="text-sm font-semibold text-muted-foreground">
+                {personaName}
+              </div>
+            )}
+
             {message.experimental_attachments &&
               message.experimental_attachments.length > 0 && (
                 <div
@@ -208,6 +222,7 @@ export const PreviewMessage = memo(
   PurePreviewMessage,
   (prevProps, nextProps) => {
     if (prevProps.isLoading !== nextProps.isLoading) return false;
+    if (prevProps.initialChatModel !== nextProps.initialChatModel) return false;
     if (prevProps.message.id !== nextProps.message.id) return false;
     if (prevProps.requiresScrollPadding !== nextProps.requiresScrollPadding)
       return false;
@@ -243,7 +258,7 @@ export const ThinkingMessage = () => {
 
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col gap-4 text-muted-foreground">
-            Hmm...
+            Thinking...
           </div>
         </div>
       </div>

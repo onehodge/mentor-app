@@ -5,7 +5,11 @@ import { generateUUID } from '@/lib/utils';
 import { auth } from '../(auth)/auth';
 import { redirect } from 'next/navigation';
 
-export default async function Page() {
+export default async function Page(props: {
+  searchParams?: {
+    modelId?: string;
+  };
+}) {
   const session = await auth();
 
   if (!session) {
@@ -17,22 +21,14 @@ export default async function Page() {
   const cookieStore = await cookies();
   const modelIdFromCookie = cookieStore.get('chat-model');
 
-  if (!modelIdFromCookie) {
-    return (
-      <>
-        <Chat
-          key={id}
-          id={id}
-          initialMessages={[]}
-          initialChatModel={DEFAULT_CHAT_MODEL}
-          initialVisibilityType="private"
-          isReadonly={false}
-          session={session}
-          autoResume={false}
-        />
-      </>
-    );
-  }
+  // Determine the initial chat model for a new chat
+  // Priority:
+  // 1. modelId from query parameter (e.g., when redirected from an existing chat)
+  // 2. Model ID from the user's cookie
+  // 3. Default chat model
+  const modelIdFromQuery = props.searchParams?.modelId;
+  const initialChatModelToUse =
+    modelIdFromQuery || modelIdFromCookie?.value || DEFAULT_CHAT_MODEL;
 
   return (
     <>
@@ -40,7 +36,7 @@ export default async function Page() {
         key={id}
         id={id}
         initialMessages={[]}
-        initialChatModel={modelIdFromCookie.value}
+        initialChatModel={initialChatModelToUse} // Use the determined model
         initialVisibilityType="private"
         isReadonly={false}
         session={session}

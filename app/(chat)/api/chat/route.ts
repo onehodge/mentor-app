@@ -103,6 +103,7 @@ export async function POST(request: Request) {
         userId: session.user.id,
         title,
         visibility: selectedVisibilityType,
+        selectedChatModelId: selectedChatModel,
       });
     } else {
       if (chat.userId !== session.user.id) {

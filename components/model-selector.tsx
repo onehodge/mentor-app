@@ -1,6 +1,7 @@
 'use client';
 
 import { startTransition, useMemo, useOptimistic, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { saveChatModelAsCookie } from '@/app/(chat)/actions';
 import { Button } from '@/components/ui/button';
@@ -20,11 +21,14 @@ import type { Session } from 'next-auth';
 export function ModelSelector({
   session,
   selectedModelId,
+  chatId,
   className,
 }: {
   session: Session;
   selectedModelId: string;
+  chatId?: string;
 } & React.ComponentProps<typeof Button>) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [optimisticModelId, setOptimisticModelId] =
     useOptimistic(selectedModelId);
@@ -72,10 +76,16 @@ export function ModelSelector({
               key={id}
               onSelect={() => {
                 setOpen(false);
+                const newlySelectedModelId = id;
 
                 startTransition(() => {
-                  setOptimisticModelId(id);
-                  saveChatModelAsCookie(id);
+                  setOptimisticModelId(newlySelectedModelId);
+
+                  saveChatModelAsCookie(newlySelectedModelId);
+
+                  if (chatId && newlySelectedModelId !== selectedModelId) {
+                    router.push(`/?modelId=${newlySelectedModelId}`);
+                  }
                 });
               }}
               data-active={id === optimisticModelId}

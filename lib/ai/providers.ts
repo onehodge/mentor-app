@@ -15,17 +15,17 @@ import {
 export const myProvider = isTestEnvironment
   ? customProvider({
       languageModels: {
-        'max-stoic': chatModel,
+        'kai-stoic': chatModel,
         'neo-founder': chatModel,
-        'jen-sage': chatModel,
+        'min-sage': chatModel,
         'title-model': titleModel,
       },
     })
   : customProvider({
       languageModels: {
-        'max-stoic': google('gemini-2.0-flash'),
+        'kai-stoic': google('gemini-2.0-flash'),
         'neo-founder': google('gemini-2.0-flash'),
-        'jen-sage': google('gemini-2.0-flash'),
+        'min-sage': google('gemini-2.0-flash'),
         'title-model': google('gemini-2.0-flash'),
       },
       imageModels: {
