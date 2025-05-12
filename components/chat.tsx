@@ -36,6 +36,7 @@ export function Chat({
   autoResume: boolean;
 }) {
   const { mutate } = useSWRConfig();
+  const [thinkingMode, setThinkingMode] = useState(false);
 
   const { visibilityType } = useChatVisibility({
     chatId: id,
@@ -65,6 +66,7 @@ export function Chat({
       message: body.messages.at(-1),
       selectedChatModel: initialChatModel,
       selectedVisibilityType: visibilityType,
+      thinkingMode,
     }),
     onFinish: () => {
       mutate(unstable_serialize(getChatHistoryPaginationKey));
@@ -146,6 +148,8 @@ export function Chat({
               setMessages={setMessages}
               append={append}
               selectedVisibilityType={visibilityType}
+              thinkingMode={thinkingMode}
+              setThinkingMode={setThinkingMode}
             />
           )}
         </form>

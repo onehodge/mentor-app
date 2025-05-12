@@ -15,20 +15,18 @@ import {
 export const myProvider = isTestEnvironment
   ? customProvider({
       languageModels: {
-        'kai-stoic': chatModel,
-        'neo-founder': chatModel,
-        'min-sage': chatModel,
         'title-model': titleModel,
+        'persona-base': chatModel,
+        'persona-reasoning': reasoningModel,
       },
     })
   : customProvider({
       languageModels: {
-        'kai-stoic': google('gemini-2.0-flash'),
-        'neo-founder': google('gemini-2.0-flash'),
-        'min-sage': google('gemini-2.0-flash'),
         'title-model': google('gemini-2.0-flash'),
-      },
-      imageModels: {
-        'small-model': xai.image('grok-2-image'),
+        'persona-base': google('gemini-2.0-flash'),
+        'persona-reasoning': wrapLanguageModel({
+          model: google('gemini-2.5-flash-preview-04-17'),
+          middleware: extractReasoningMiddleware({ tagName: 'think' }),
+        }),
       },
     });

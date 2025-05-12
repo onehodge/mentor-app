@@ -6,7 +6,7 @@ import {
   streamText,
 } from 'ai';
 import { auth, type UserType } from '@/app/(auth)/auth';
-import { systemPrompt } from '@/lib/ai/prompts';
+import { systemPrompt, thinkingPrompt } from '@/lib/ai/prompts';
 import {
   createStreamId,
   deleteChatById,
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { id, message, selectedChatModel, selectedVisibilityType } =
+    const { id, message, selectedChatModel, selectedVisibilityType, thinkingMode } =
       requestBody;
 
     const session = await auth();
@@ -137,9 +137,19 @@ export async function POST(request: Request) {
 
     const stream = createDataStream({
       execute: (dataStream) => {
+        const modelId = thinkingMode ? 'persona-reasoning' : 'persona-base';
+        
+        // Get base system prompt
+        let currentSystemPrompt = systemPrompt({ selectedChatModel });
+
+        // If thinking mode is enabled, append the thinking instruction
+        if (thinkingMode) {
+          currentSystemPrompt = `${currentSystemPrompt}\n\n${thinkingPrompt}`;
+        }
+
         const result = streamText({
-          model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel }),
+          model: myProvider.languageModel(modelId),
+          system: currentSystemPrompt, // Use the potentially modified system prompt
           messages,
           maxSteps: 5,
           experimental_activeTools: [],
@@ -147,6 +157,7 @@ export async function POST(request: Request) {
           experimental_generateMessageId: generateUUID,
           tools: {},
           onFinish: async ({ response }) => {
+            console.log('[API Route] Raw response from model:', JSON.stringify(response, null, 2));
             if (session.user?.id) {
               try {
                 const assistantId = getTrailingMessageId({
@@ -191,7 +202,7 @@ export async function POST(request: Request) {
         result.consumeStream();
 
         result.mergeIntoDataStream(dataStream, {
-          sendReasoning: true,
+          sendReasoning: thinkingMode,
         });
       },
       onError: () => {

@@ -24,9 +24,10 @@ import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, Brain } from 'lucide-react';
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 import type { VisibilityType } from './visibility-selector';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 function PureMultimodalInput({
   chatId,
@@ -42,6 +43,8 @@ function PureMultimodalInput({
   handleSubmit,
   className,
   selectedVisibilityType,
+  thinkingMode,
+  setThinkingMode,
 }: {
   chatId: string;
   input: UseChatHelpers['input'];
@@ -56,6 +59,8 @@ function PureMultimodalInput({
   handleSubmit: UseChatHelpers['handleSubmit'];
   className?: string;
   selectedVisibilityType: VisibilityType;
+  thinkingMode: boolean;
+  setThinkingMode: Dispatch<SetStateAction<boolean>>;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -293,6 +298,7 @@ function PureMultimodalInput({
 
       <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
         <AttachmentsButton fileInputRef={fileInputRef} status={status} />
+        <ThinkingModeToggle thinkingMode={thinkingMode} setThinkingMode={setThinkingMode} status={status} />
       </div>
 
       <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
@@ -318,6 +324,7 @@ export const MultimodalInput = memo(
     if (!equal(prevProps.attachments, nextProps.attachments)) return false;
     if (prevProps.selectedVisibilityType !== nextProps.selectedVisibilityType)
       return false;
+    if (prevProps.thinkingMode !== nextProps.thinkingMode) return false;
 
     return true;
   },
@@ -402,3 +409,39 @@ const SendButton = memo(PureSendButton, (prevProps, nextProps) => {
   if (prevProps.input !== nextProps.input) return false;
   return true;
 });
+
+function PureThinkingModeToggle({
+  thinkingMode,
+  setThinkingMode,
+  status,
+}: {
+  thinkingMode: boolean;
+  setThinkingMode: Dispatch<SetStateAction<boolean>>;
+  status: UseChatHelpers['status'];
+}) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            data-testid="thinking-mode-toggle"
+            className="rounded-md rounded-bl-lg p-[7px] h-fit dark:border-zinc-700 hover:dark:bg-zinc-900 hover:bg-zinc-200 ml-1"
+            onClick={(event) => {
+              event.preventDefault();
+              setThinkingMode(!thinkingMode);
+            }}
+            disabled={status !== 'ready'}
+            variant="ghost"
+          >
+            <Brain size={14} className={thinkingMode ? "text-blue-500" : ""} />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <p>Reason</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+const ThinkingModeToggle = memo(PureThinkingModeToggle);
