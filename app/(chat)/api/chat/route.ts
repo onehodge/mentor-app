@@ -6,7 +6,7 @@ import {
   streamText,
 } from 'ai';
 import { auth, type UserType } from '@/app/(auth)/auth';
-import { systemPrompt, thinkingPrompt } from '@/lib/ai/prompts';
+import { systemPrompt } from '@/lib/ai/prompts';
 import {
   createStreamId,
   deleteChatById,
@@ -137,19 +137,9 @@ export async function POST(request: Request) {
 
     const stream = createDataStream({
       execute: (dataStream) => {
-        const modelId = thinkingMode ? 'persona-reasoning' : 'persona-base';
-        
-        // Get base system prompt
-        let currentSystemPrompt = systemPrompt({ selectedChatModel });
-
-        // If thinking mode is enabled, append the thinking instruction
-        if (thinkingMode) {
-          currentSystemPrompt = `${currentSystemPrompt}\n\n${thinkingPrompt}`;
-        }
-
         const result = streamText({
-          model: myProvider.languageModel(modelId),
-          system: currentSystemPrompt, // Use the potentially modified system prompt
+          model: myProvider.languageModel(thinkingMode ? 'persona-reasoning' : 'persona-base'),
+          system: systemPrompt({ selectedChatModel }), 
           messages,
           maxSteps: 5,
           experimental_activeTools: [],
@@ -205,7 +195,8 @@ export async function POST(request: Request) {
           sendReasoning: thinkingMode,
         });
       },
-      onError: () => {
+      onError: (error) => {
+        console.error('[API Route] Error during stream execution:', error);
         return 'Oops, an error occurred!';
       },
     });

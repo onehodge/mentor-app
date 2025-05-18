@@ -3,8 +3,8 @@ import {
   extractReasoningMiddleware,
   wrapLanguageModel,
 } from 'ai';
-import { xai } from '@ai-sdk/xai';
 import { google } from '@ai-sdk/google';
+import { deepseek } from '@ai-sdk/deepseek';
 import { isTestEnvironment } from '../constants';
 import {
   chatModel,
@@ -25,8 +25,10 @@ export const myProvider = isTestEnvironment
         'title-model': google('gemini-2.0-flash'),
         'persona-base': google('gemini-2.0-flash'),
         'persona-reasoning': wrapLanguageModel({
-          model: google('gemini-2.5-flash-preview-04-17'),
+          //model: google('gemini-2.5-pro-exp-03-25'),
+          model:deepseek('deepseek-reasoner'),
           middleware: extractReasoningMiddleware({ tagName: 'think' }),
         }),
+        
       },
     });
