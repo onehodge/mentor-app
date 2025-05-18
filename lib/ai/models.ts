@@ -1,4 +1,4 @@
-export const DEFAULT_CHAT_MODEL: string = 'kai-stoic';
+export const DEFAULT_CHAT_MODEL: string = 'aristotle';
 
 export interface ChatModel {
   id: string;
@@ -8,18 +8,18 @@ export interface ChatModel {
 
 export const chatModels: Array<ChatModel> = [
   {
-    id: 'kai-stoic',
-    name: 'Kai – The Stoic',
-    description: '🏛 Master your mind. Live with clarity, courage, and integrity.',
+    id: 'aristotle',
+    name: 'Aristotle',
+    description: 'Know yourself. Then act accordingly.',
   },
   {
-    id: 'neo-founder',
-    name: 'Neo – The Founder',
-    description: '🚀 Think deeper. Break rules. Build bold and better futures.',
+    id: 'naval',
+    name: 'Naval Ravikant',
+    description: 'Play long-term games with long-term people.',
   },
   {
-    id: 'min-sage',
-    name: 'Min – The Sage',
-    description: '🌿 Let go. Find stillness, presence, and quiet inner wisdom.',
+    id: 'bible',
+    name: 'The Bible',
+    description: 'Seek and you shall find.',
   },
 ];
