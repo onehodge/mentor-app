@@ -18,8 +18,8 @@ export const chatModels: Array<ChatModel> = [
     description: 'Play long-term games with long-term people.',
   },
   {
-    id: 'bible',
-    name: 'The Bible',
+    id: 'pastor',
+    name: 'The pastor',
     description: 'Seek and you shall find.',
   },
 ];
