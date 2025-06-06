@@ -25,9 +25,9 @@ export const myProvider = isTestEnvironment
   : customProvider({
       languageModels: {
         'title-model':  google('gemini-2.0-flash'),
-        //'persona-base': google('gemini-2.0-flash'),
+        'persona-base': google('gemini-2.0-flash'),
         //'persona-base': anthropic('claude-3-5-haiku-20241022'),
-        'persona-base': openai('gpt-4o-mini'),
+        //'persona-base': openai('gpt-4o-mini'),
         'persona-reasoning': wrapLanguageModel({
           //model: google('gemini-2.5-pro-exp-03-25'),
           model:deepseek('deepseek-reasoner'),
