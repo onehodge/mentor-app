@@ -45,6 +45,7 @@ function PureMultimodalInput({
   selectedVisibilityType,
   thinkingMode,
   setThinkingMode,
+  selectedChatModel,
 }: {
   chatId: string;
   input: UseChatHelpers['input'];
@@ -61,6 +62,7 @@ function PureMultimodalInput({
   selectedVisibilityType: VisibilityType;
   thinkingMode: boolean;
   setThinkingMode: Dispatch<SetStateAction<boolean>>;
+  selectedChatModel: string;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -232,6 +234,7 @@ function PureMultimodalInput({
             append={append}
             chatId={chatId}
             selectedVisibilityType={selectedVisibilityType}
+            selectedChatModel={selectedChatModel}
           />
         )}
 
@@ -325,6 +328,7 @@ export const MultimodalInput = memo(
     if (prevProps.selectedVisibilityType !== nextProps.selectedVisibilityType)
       return false;
     if (prevProps.thinkingMode !== nextProps.thinkingMode) return false;
+    if (prevProps.selectedChatModel !== nextProps.selectedChatModel) return false;
 
     return true;
   },

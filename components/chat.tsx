@@ -150,6 +150,7 @@ export function Chat({
               selectedVisibilityType={visibilityType}
               thinkingMode={thinkingMode}
               setThinkingMode={setThinkingMode}
+              selectedChatModel={initialChatModel}
             />
           )}
         </form>
